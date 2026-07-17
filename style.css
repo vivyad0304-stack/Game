@@ -1,0 +1,650 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Outfit:wght@300;400;600;800&display=swap');
+
+:root {
+  --bg-color: #f6e6cf;
+  --panel-bg: #fffbf4;
+  --primary-color: #df5846; /* Strawberry red */
+  --secondary-color: #e59e45; /* Croissant gold */
+  --accent-color: #634335; /* Coffee brown */
+  --border-color: #2c1a13;
+  --text-color: #2c1a13;
+  --font-retro: 'Press Start 2P', monospace;
+  --font-ui: 'Outfit', sans-serif;
+  --shadow-pixel: 4px 4px 0px 0px var(--border-color);
+  --shadow-pixel-hover: 2px 2px 0px 0px var(--border-color);
+  --shadow-pixel-active: 0px 0px 0px 0px var(--border-color);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  image-rendering: pixelated;
+}
+
+body {
+  background-color: #ebdcb9;
+  background-image: 
+    radial-gradient(var(--border-color) 1px, transparent 1px),
+    radial-gradient(var(--border-color) 1px, #ebdcb9 1px);
+  background-size: 40px 40px;
+  background-position: 0 0, 20px 20px;
+  font-family: var(--font-ui);
+  color: var(--text-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  overflow-x: hidden;
+}
+
+/* Retro CRT Screen / Cabinet Container */
+.game-console {
+  background: #3e2723;
+  border: 8px solid var(--border-color);
+  border-radius: 24px;
+  padding: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 -8px 0 #2d1a18, inset 0 8px 0 #5d3a37;
+  max-width: 680px;
+  width: 100%;
+  position: relative;
+}
+
+.game-screen-wrapper {
+  background: var(--bg-color);
+  border: 6px solid var(--border-color);
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.15);
+  aspect-ratio: 4 / 3;
+}
+
+/* Subtle CRT Overlay */
+.game-screen-wrapper::after {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+  background-size: 100% 4px;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+/* Screen Management */
+.screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  transform: scale(0.95);
+  z-index: 1;
+}
+
+.screen.active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1);
+  z-index: 10;
+}
+
+/* Typography & Pixel Elements */
+h1 {
+  font-family: var(--font-retro);
+  font-size: 20px;
+  text-align: center;
+  line-height: 1.5;
+  color: var(--primary-color);
+  text-shadow: 3px 3px 0px var(--border-color);
+  margin-bottom: 24px;
+}
+
+h2 {
+  font-family: var(--font-retro);
+  font-size: 14px;
+  color: var(--accent-color);
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.pixel-card {
+  background: var(--panel-bg);
+  border: 4px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: var(--shadow-pixel);
+  padding: 16px;
+  width: 100%;
+  max-width: 480px;
+  margin-bottom: 24px;
+}
+
+/* Pixel Buttons */
+.pixel-btn {
+  font-family: var(--font-retro);
+  font-size: 11px;
+  padding: 12px 24px;
+  background-color: var(--secondary-color);
+  color: #fff;
+  border: 4px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: var(--shadow-pixel);
+  transition: all 0.1s ease;
+  outline: none;
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  text-shadow: 2px 2px 0px var(--border-color);
+}
+
+.pixel-btn:hover {
+  background-color: #f7b358;
+  transform: translate(2px, 2px);
+  box-shadow: var(--shadow-pixel-hover);
+}
+
+.pixel-btn:active {
+  transform: translate(4px, 4px);
+  box-shadow: var(--shadow-pixel-active);
+}
+
+.pixel-btn.primary {
+  background-color: var(--primary-color);
+}
+.pixel-btn.primary:hover {
+  background-color: #f17564;
+}
+
+.pixel-btn.disabled {
+  background-color: #a0978d;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* --- Screen 1: Quest/Intro Screen --- */
+.quest-list {
+  list-style: none;
+  margin-bottom: 12px;
+}
+
+.quest-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 2px dashed #e2d2bb;
+}
+
+.quest-item:last-child {
+  border-bottom: none;
+}
+
+.quest-icon {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.quest-details h3 {
+  font-family: var(--font-retro);
+  font-size: 9px;
+  color: var(--accent-color);
+  margin-bottom: 4px;
+}
+
+.quest-details p {
+  font-size: 13px;
+  color: #7d6559;
+}
+
+.intro-buttons {
+  display: flex;
+  gap: 16px;
+}
+
+/* --- Screen 2: Gameplay Screen --- */
+.gameplay-container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  padding: 0;
+}
+
+#gameCanvas {
+  background-color: #a1db6b; /* Retro Grass Color */
+  flex-grow: 1;
+  height: 100%;
+  border-right: 4px solid var(--border-color);
+}
+
+/* Sidebar Checklist during gameplay */
+.game-sidebar {
+  width: 160px;
+  background-color: var(--panel-bg);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.sidebar-title {
+  font-family: var(--font-retro);
+  font-size: 8px;
+  line-height: 1.4;
+  color: var(--accent-color);
+  border-bottom: 3px double var(--border-color);
+  padding-bottom: 8px;
+  text-align: center;
+}
+
+.checklist {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.check-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.check-item img, .check-item svg {
+  width: 20px;
+  height: 20px;
+}
+
+.check-box {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--border-color);
+  border-radius: 3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 10px;
+  color: var(--primary-color);
+  background: #fff;
+}
+
+.check-item.done {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+.check-item.done .check-box::after {
+  content: "✔";
+}
+
+/* Virtual D-pad for mobile controls */
+.mobile-dpad {
+  display: none;
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  z-index: 50;
+  width: 120px;
+  height: 120px;
+  grid-template-areas: 
+    ". up ."
+    "left . right"
+    ". down .";
+  grid-template-columns: 40px 40px 40px;
+  grid-template-rows: 40px 40px 40px;
+  gap: 4px;
+}
+
+.dpad-btn {
+  background: var(--panel-bg);
+  border: 3px solid var(--border-color);
+  border-radius: 6px;
+  box-shadow: 2px 2px 0 var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+}
+
+.dpad-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--border-color);
+  background: #eae5db;
+}
+
+.dpad-up { grid-area: up; }
+.dpad-down { grid-area: down; }
+.dpad-left { grid-area: left; }
+.dpad-right { grid-area: right; }
+
+@media (max-width: 540px) {
+  .mobile-dpad {
+    display: grid;
+  }
+}
+
+/* --- Screen 3 & 4: Dialogue / Proposal --- */
+.dialogue-overlay {
+  background: rgba(0, 0, 0, 0.4);
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0; left: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 16px;
+  z-index: 60;
+}
+
+.dialogue-box {
+  background: var(--panel-bg);
+  border: 4px solid var(--border-color);
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: var(--shadow-pixel);
+  display: flex;
+  gap: 16px;
+  min-height: 120px;
+  position: relative;
+  animation: slideUp 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+.dialogue-avatar {
+  width: 64px;
+  height: 64px;
+  border: 3px solid var(--border-color);
+  border-radius: 6px;
+  background: #a1db6b;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dialogue-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.dialogue-text {
+  font-size: 15px;
+  line-height: 1.4;
+  font-weight: 600;
+}
+
+.dialogue-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Next / Continue Prompt */
+.dialogue-next-btn {
+  font-family: var(--font-retro);
+  font-size: 8px;
+  background: var(--secondary-color);
+  color: white;
+  border: 3px solid var(--border-color);
+  border-radius: 4px;
+  padding: 4px 10px;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--border-color);
+  transition: all 0.1s ease;
+  animation: pulse 1s infinite alternate;
+}
+
+.dialogue-next-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0 var(--border-color);
+}
+
+/* --- Yes/No Selection --- */
+.date-proposal-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.funny-warning {
+  min-height: 36px;
+  font-family: var(--font-retro);
+  font-size: 9px;
+  color: var(--primary-color);
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  animation: pulse 0.6s infinite alternate;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.funny-warning.show {
+  opacity: 1;
+}
+
+.proposal-buttons-container {
+  display: flex;
+  gap: 32px;
+  position: relative;
+  min-height: 60px;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+}
+
+#btnYes {
+  position: absolute;
+  left: calc(50% - 90px);
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 20;
+}
+
+.no-btn-wrapper {
+  position: absolute;
+  left: calc(50% + 90px);
+  top: 50%;
+  transform: translate(-50%, -50%);
+  transition: all 0.15s cubic-bezier(0.18, 0.89, 0.32, 1.2);
+  z-index: 10;
+}
+
+/* --- Screen 5: Date Picker Screen --- */
+.picker-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input-label {
+  font-family: var(--font-retro);
+  font-size: 8px;
+  color: var(--accent-color);
+}
+
+.pixel-input {
+  font-family: var(--font-ui);
+  font-size: 16px;
+  font-weight: 600;
+  padding: 10px 14px;
+  background: white;
+  border: 4px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-color);
+  outline: none;
+  box-shadow: inset 2px 2px 0 rgba(0,0,0,0.1);
+  width: 100%;
+}
+
+.pixel-input:focus {
+  border-color: var(--primary-color);
+}
+
+/* Custom styles for native time/date pickers to look slightly integrated */
+.pixel-input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  filter: sepia(1) saturate(5) hue-rotate(-45deg);
+}
+
+/* --- Screen 6: Yay Success Screen --- */
+.yay-container {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+}
+
+.yay-banner {
+  font-size: 26px;
+  color: var(--primary-color);
+  margin-bottom: 8px;
+  animation: zoomInOut 1.5s infinite ease-in-out;
+}
+
+.yay-subtitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--accent-color);
+  margin-bottom: 24px;
+}
+
+.lockin-details-box {
+  background: var(--panel-bg);
+  border: 4px solid var(--border-color);
+  border-radius: 8px;
+  padding: 16px 24px;
+  box-shadow: var(--shadow-pixel);
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.date-text {
+  font-family: var(--font-retro);
+  font-size: 11px;
+  color: var(--primary-color);
+  margin-top: 8px;
+  line-height: 1.6;
+}
+
+.heart-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0; left: 0;
+  pointer-events: none;
+  z-index: 5;
+  overflow: hidden;
+}
+
+.floating-heart {
+  position: absolute;
+  color: var(--primary-color);
+  font-size: 20px;
+  animation: floatUp 4s linear infinite;
+  opacity: 0;
+}
+
+/* Sound Toggle Control */
+.sound-toggle {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 110;
+  background: var(--panel-bg);
+  border: 3px solid var(--border-color);
+  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.sound-toggle:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--border-color);
+}
+.sound-toggle svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Animations */
+@keyframes slideUp {
+  from { transform: translateY(50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes pulse {
+  from { transform: scale(1); }
+  to { transform: scale(1.05); }
+}
+
+@keyframes zoomInOut {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(110%) translateX(0) scale(0.6) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-20%) translateX(var(--drift)) scale(1.2) rotate(var(--rotation));
+    opacity: 0;
+  }
+}
+
+/* Game sprite bounce for visual charm */
+.sprite-bounce {
+  animation: spriteBounce 0.4s infinite alternate ease-in-out;
+}
+
+@keyframes spriteBounce {
+  from { transform: translateY(0); }
+  to { transform: translateY(-4px); }
+}

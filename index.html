@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Retro Picnic Date Quest</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Game Console Wrapper -->
+  <div class="game-console">
+    
+    <!-- Sound Toggle -->
+    <div class="sound-toggle" id="soundToggle" title="Toggle Sound">
+      <!-- Volume Up Icon (default) -->
+      <svg id="soundOnIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+      </svg>
+      <!-- Mute Icon (hidden by default) -->
+      <svg id="soundOffIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+        <line x1="23" y1="9" x2="17" y2="15"></line>
+        <line x1="17" y1="9" x2="23" y2="15"></line>
+      </svg>
+    </div>
+
+    <!-- Screen Wrapper -->
+    <div class="game-screen-wrapper">
+
+      <!-- SCREEN 1: Intro / Quest Screen -->
+      <div class="screen active" id="screenIntro">
+        <h1>YOUR QUEST</h1>
+        
+        <div class="pixel-card">
+          <ul class="quest-list">
+            <li class="quest-item">
+              <div class="quest-icon">
+                <!-- SVG Strawberry -->
+                <svg viewBox="0 0 32 32">
+                  <path d="M16 4 L20 8 L12 8 Z" fill="#4caf50" />
+                  <path d="M10 8 C10 16 10 26 16 28 C22 26 22 16 22 8 Z" fill="#df5846" />
+                  <!-- Seeds -->
+                  <rect x="13" y="12" width="2" height="2" fill="#fdd835" />
+                  <rect x="17" y="12" width="2" height="2" fill="#fdd835" />
+                  <rect x="15" y="17" width="2" height="2" fill="#fdd835" />
+                  <rect x="12" y="21" width="2" height="2" fill="#fdd835" />
+                  <rect x="18" y="21" width="2" height="2" fill="#fdd835" />
+                </svg>
+              </div>
+              <div class="quest-details">
+                <h3>Collect the Strawberry</h3>
+                <p>A sweet treat for your picnic</p>
+              </div>
+            </li>
+            <li class="quest-item">
+              <div class="quest-icon">
+                <!-- SVG Croissant -->
+                <svg viewBox="0 0 32 32">
+                  <path d="M6 18 C6 14, 10 10, 16 10 C22 10, 26 14, 26 18 C26 22, 22 22, 16 20 C10 22, 6 22, 6 18 Z" fill="#e59e45" />
+                  <path d="M11 12 C13 11, 19 11, 21 12" fill="none" stroke="#634335" stroke-width="2" />
+                  <path d="M8 15 C11 14, 21 14, 24 15" fill="none" stroke="#634335" stroke-width="2" />
+                  <path d="M9 18 C11 17, 21 17, 23 18" fill="none" stroke="#634335" stroke-width="2" />
+                </svg>
+              </div>
+              <div class="quest-details">
+                <h3>Collect the Croissant</h3>
+                <p>A delicious pastry to share</p>
+              </div>
+            </li>
+            <li class="quest-item">
+              <div class="quest-icon">
+                <!-- SVG Coffee -->
+                <svg viewBox="0 0 32 32">
+                  <!-- Steam -->
+                  <path d="M12 4 Q14 2 12 0" fill="none" stroke="#a0978d" stroke-width="2" stroke-linecap="round" />
+                  <path d="M16 4 Q18 2 16 0" fill="none" stroke="#a0978d" stroke-width="2" stroke-linecap="round" />
+                  <path d="M20 4 Q22 2 20 0" fill="none" stroke="#a0978d" stroke-width="2" stroke-linecap="round" />
+                  <!-- Cup Body -->
+                  <path d="M8 8 H24 V22 C24 26, 8 26, 8 22 Z" fill="#634335" />
+                  <path d="M24 11 H28 V19 H24" fill="none" stroke="#634335" stroke-width="3" stroke-linecap="round" />
+                  <path d="M6 26 H26" fill="none" stroke="#2c1a13" stroke-width="2" />
+                </svg>
+              </div>
+              <div class="quest-details">
+                <h3>Collect the Coffee</h3>
+                <p>Warm drinks for a cozy moment</p>
+              </div>
+            </li>
+          </ul>
+          <p style="font-size: 11px; text-align: center; font-weight: bold; margin-top: 8px; color: var(--accent-color);">
+            Collect everything, then walk to the picnic blanket!
+          </p>
+        </div>
+
+        <div class="intro-buttons">
+          <button class="pixel-btn primary" id="btnStartGame">Start Game</button>
+          <button class="pixel-btn" id="btnBack">Back</button>
+        </div>
+      </div>
+
+      <!-- SCREEN 2: Gameplay Screen -->
+      <div class="screen" id="screenGameplay" style="padding: 0;">
+        <div class="gameplay-container">
+          
+          <!-- Game Map Grid -->
+          <div id="gameGrid" style="display: grid; grid-template-columns: repeat(13, 1fr); grid-template-rows: repeat(13, 1fr); width: 100%; height: 100%; position: relative; background: #96cd63;">
+            <!-- Grid tiles will be injected via JS -->
+            
+            <!-- Picnic Blanket element -->
+            <div id="picnicBlanket" style="position: absolute; display: flex; align-items: center; justify-content: center; z-index: 5; transition: transform 0.2s;">
+              <svg viewBox="0 0 32 32" style="width: 100%; height: 100%;">
+                <!-- Red & White Checkered Blanket -->
+                <rect x="2" y="2" width="28" height="28" fill="#df5846" />
+                <!-- White squares -->
+                <rect x="2" y="2" width="7" height="7" fill="#fff" />
+                <rect x="16" y="2" width="7" height="7" fill="#fff" />
+                <rect x="9" y="9" width="7" height="7" fill="#fff" />
+                <rect x="23" y="9" width="7" height="7" fill="#fff" />
+                <rect x="2" y="16" width="7" height="7" fill="#fff" />
+                <rect x="16" y="16" width="7" height="7" fill="#fff" />
+                <rect x="9" y="23" width="7" height="7" fill="#fff" />
+                <rect x="23" y="23" width="7" height="7" fill="#fff" />
+                <!-- Picnic Basket in center -->
+                <rect x="10" y="12" width="12" height="10" fill="#a1703e" rx="1" />
+                <path d="M12 12 Q16 6 20 12" fill="none" stroke="#754b24" stroke-width="2" />
+                <rect x="9" y="11" width="14" height="2" fill="#754b24" />
+              </svg>
+            </div>
+
+            <!-- Items -->
+            <div id="itemStrawberry" class="game-item" style="position: absolute; z-index: 10;">
+              <svg viewBox="0 0 32 32" style="width: 100%; height: 100%;">
+                <path d="M16 4 L20 8 L12 8 Z" fill="#4caf50" />
+                <path d="M10 8 C10 16 10 26 16 28 C22 26 22 16 22 8 Z" fill="#df5846" />
+                <rect x="13" y="12" width="2" height="2" fill="#fdd835" />
+                <rect x="17" y="12" width="2" height="2" fill="#fdd835" />
+                <rect x="15" y="17" width="2" height="2" fill="#fdd835" />
+              </svg>
+            </div>
+            
+            <div id="itemCroissant" class="game-item" style="position: absolute; z-index: 10;">
+              <svg viewBox="0 0 32 32" style="width: 100%; height: 100%;">
+                <path d="M6 18 C6 14, 10 10, 16 10 C22 10, 26 14, 26 18 C26 22, 22 22, 16 20 C10 22, 6 22, 6 18 Z" fill="#e59e45" />
+                <path d="M11 12 C13 11, 19 11, 21 12" fill="none" stroke="#634335" stroke-width="1.5" />
+                <path d="M8 15 C11 14, 21 14, 24 15" fill="none" stroke="#634335" stroke-width="1.5" />
+              </svg>
+            </div>
+
+            <div id="itemCoffee" class="game-item" style="position: absolute; z-index: 10;">
+              <svg viewBox="0 0 32 32" style="width: 100%; height: 100%;">
+                <path d="M8 8 H24 V22 C24 26, 8 26, 8 22 Z" fill="#634335" />
+                <path d="M24 11 H28 V19 H24" fill="none" stroke="#634335" stroke-width="2.5" />
+                <path d="M6 26 H26" fill="none" stroke="#2c1a13" stroke-width="2" />
+              </svg>
+            </div>
+
+            <!-- Player Sprite -->
+            <div id="player" class="sprite-bounce" style="position: absolute; z-index: 20; transition: left 0.12s ease-out, top 0.12s ease-out; display: flex; align-items: center; justify-content: center;">
+              <svg viewBox="0 0 32 32" style="width: 100%; height: 100%; overflow: visible;">
+                <!-- Cute chibi retro character -->
+                <!-- Hair (brown) -->
+                <rect x="8" y="2" width="16" height="8" fill="#4e342e" />
+                <rect x="6" y="6" width="4" height="6" fill="#4e342e" />
+                <rect x="22" y="6" width="4" height="6" fill="#4e342e" />
+                <!-- Face (skin tone) -->
+                <rect x="10" y="8" width="12" height="8" fill="#ffcc80" />
+                <!-- Eyes -->
+                <rect x="11" y="10" width="2" height="2" fill="#2c1a13" />
+                <rect x="19" y="10" width="2" height="2" fill="#2c1a13" />
+                <!-- Cheeks (cute blush) -->
+                <rect x="9" y="12" width="2" height="1" fill="#ff8a80" />
+                <rect x="21" y="12" width="2" height="1" fill="#ff8a80" />
+                <!-- Body/Shirt (denim/blue) -->
+                <rect x="8" y="16" width="16" height="10" fill="#1e88e5" />
+                <!-- Pants (dark brown) -->
+                <rect x="10" y="26" width="12" height="4" fill="#37474f" />
+                <!-- Shoes (black) -->
+                <rect x="9" y="30" width="5" height="2" fill="#212121" />
+                <rect x="18" y="30" width="5" height="2" fill="#212121" />
+                <!-- Hands -->
+                <rect x="6" y="18" width="2" height="4" fill="#ffcc80" />
+                <rect x="24" y="18" width="2" height="4" fill="#ffcc80" />
+              </svg>
+            </div>
+
+            <!-- Virtual D-pad (Only visible on small viewports) -->
+            <div class="mobile-dpad">
+              <div class="dpad-btn dpad-up" id="dpadUp">▲</div>
+              <div class="dpad-btn dpad-left" id="dpadLeft">◀</div>
+              <div class="dpad-btn dpad-right" id="dpadRight">▶</div>
+              <div class="dpad-btn dpad-down" id="dpadDown">▼</div>
+            </div>
+
+          </div>
+
+          <!-- Gameplay Sidebar Checklist -->
+          <div class="game-sidebar">
+            <div class="sidebar-title">YOUR QUEST</div>
+            
+            <ul class="checklist">
+              <li class="check-item" id="checkStrawberry">
+                <div class="check-box"></div>
+                <span>Strawberry</span>
+              </li>
+              <li class="check-item" id="checkCroissant">
+                <div class="check-box"></div>
+                <span>Croissant</span>
+              </li>
+              <li class="check-item" id="checkCoffee">
+                <div class="check-box"></div>
+                <span>Coffee</span>
+              </li>
+            </ul>
+
+            <div style="font-size: 11px; margin-top: auto; text-align: center; color: #a1703e; font-weight: bold; line-height: 1.3;">
+              WASD or Arrows to Walk 🚶‍♂️
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Dialog Box Overlay (Hidden initially, triggered on blanket collision) -->
+        <div class="dialogue-overlay" id="dialogueOverlay" style="display: none;">
+          <div class="dialogue-box">
+            <div class="dialogue-avatar">
+              <!-- Avatar Face SVG -->
+              <svg viewBox="0 0 32 32" style="width: 48px; height: 48px;">
+                <!-- Face -->
+                <rect x="8" y="4" width="16" height="18" fill="#ffcc80" />
+                <!-- Hair -->
+                <rect x="6" y="2" width="20" height="6" fill="#4e342e" />
+                <rect x="6" y="8" width="3" height="12" fill="#4e342e" />
+                <rect x="23" y="8" width="3" height="12" fill="#4e342e" />
+                <!-- Eyes -->
+                <rect x="11" y="10" width="2" height="2" fill="#2c1a13" />
+                <rect x="19" y="10" width="2" height="2" fill="#2c1a13" />
+                <!-- Smile -->
+                <path d="M13 16 Q16 18 19 16" fill="none" stroke="#2c1a13" stroke-width="2" stroke-linecap="round" />
+                <!-- Blush -->
+                <rect x="9" y="12" width="2" height="1" fill="#ff8a80" />
+                <rect x="21" y="12" width="2" height="1" fill="#ff8a80" />
+              </svg>
+            </div>
+            <div class="dialogue-content">
+              <div class="dialogue-text" id="dialogueText">Everything's ready...</div>
+              <div class="dialogue-footer">
+                <button class="dialogue-next-btn" id="btnNextDialogue">Next ▸</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN 3: Yes/No Proposal Question Screen -->
+      <div class="screen" id="screenProposal">
+        <h1 style="color: var(--primary-color);">WILL YOU GO ON A DATE WITH ME?</h1>
+        
+        <div class="date-proposal-content">
+          <!-- Cute Gift Box/Picnic Basket SVG -->
+          <svg viewBox="0 0 64 64" style="width: 100px; height: 100px; margin-bottom: 8px;">
+            <!-- Heart Balloon -->
+            <path d="M32 6 C24 -2, 10 2, 18 14 Q32 28 32 32 Q32 28 46 14 C54 2, 40 -2, 32 6 Z" fill="#df5846" />
+            <path d="M32 32 L32 44" fill="none" stroke="#2c1a13" stroke-width="2" stroke-dasharray="3 3" />
+            <!-- Basket -->
+            <rect x="20" y="44" width="24" height="16" fill="#a1703e" rx="2" />
+            <rect x="18" y="42" width="28" height="4" fill="#754b24" />
+          </svg>
+
+          <!-- Warning/Hint Text Box -->
+          <div class="funny-warning" id="funnyWarning">Nice try!!</div>
+
+          <!-- Proposal Buttons -->
+          <div class="proposal-buttons-container" id="proposalBtnContainer">
+            <button class="pixel-btn primary" id="btnYes" style="font-size: 14px; padding: 16px 36px; z-index: 20;">Yes! ❤️</button>
+            <div class="no-btn-wrapper" id="btnNoWrapper">
+              <button class="pixel-btn" id="btnNo" style="font-size: 14px; padding: 16px 36px; background-color: #a0978d;">No</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN 4: Date/Time Picker Screen -->
+      <div class="screen" id="screenPicker">
+        <h1>WHEN SHOULD WE MEET?</h1>
+        <p style="font-size: 13px; font-weight: bold; margin-bottom: 20px; color: var(--accent-color); text-align: center;">
+          Pick a date & time for our picnic 🧺❤️
+        </p>
+
+        <div class="pixel-card">
+          <div class="picker-container">
+            <div class="input-group">
+              <label class="input-label" for="inputDate">DATE</label>
+              <input type="date" class="pixel-input" id="inputDate" required>
+            </div>
+            
+            <div class="input-group">
+              <label class="input-label" for="inputTime">TIME</label>
+              <input type="time" class="pixel-input" id="inputTime" required>
+            </div>
+          </div>
+        </div>
+
+        <button class="pixel-btn primary" id="btnLockIn" style="font-size: 14px; width: 100%; max-width: 480px; justify-content: center;">
+          Lock In! 🔒
+        </button>
+      </div>
+
+      <!-- SCREEN 5: Yay Victory/Celebration Screen -->
+      <div class="screen" id="screenSuccess">
+        <div class="heart-container" id="successHearts"></div>
+
+        <div class="yay-container">
+          <div class="yay-banner">YAY! 🎉❤️</div>
+          <div class="yay-subtitle">See you on our date!</div>
+
+          <!-- Food items row spinning/floating -->
+          <div style="display: flex; gap: 24px; margin-bottom: 20px;">
+            <svg class="sprite-bounce" style="width: 40px; height: 40px;" viewBox="0 0 32 32">
+              <path d="M8 8 H24 V22 C24 26, 8 26, 8 22 Z" fill="#634335" />
+              <path d="M24 11 H28 V19 H24" fill="none" stroke="#634335" stroke-width="2.5" />
+            </svg>
+            <svg class="sprite-bounce" style="width: 40px; height: 40px; animation-delay: 0.15s;" viewBox="0 0 32 32">
+              <path d="M6 18 C6 14, 10 10, 16 10 C22 10, 26 14, 26 18 C26 22, 22 22, 16 20 C10 22, 6 22, 6 18 Z" fill="#e59e45" />
+            </svg>
+            <svg class="sprite-bounce" style="width: 40px; height: 40px; animation-delay: 0.3s;" viewBox="0 0 32 32">
+              <path d="M16 4 L20 8 L12 8 Z" fill="#4caf50" />
+              <path d="M10 8 C10 16 10 26 16 28 C22 26 22 16 22 8 Z" fill="#df5846" />
+            </svg>
+          </div>
+
+          <div class="lockin-details-box">
+            <h2 style="margin-bottom: 0;">DATE LOCKED IN</h2>
+            <div class="date-text" id="lockedDateTimeText">Wednesday, July 22 at 19:03</div>
+          </div>
+
+          <p style="font-size: 10px; font-family: var(--font-retro); color: var(--accent-color); margin-top: 10px;">
+            Made with ❤️ for you
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
