@@ -439,17 +439,12 @@ const Game = {
     document.getElementById('btnLockIn').addEventListener('click', () => {
       const inputDate = document.getElementById('inputDate').value;
       const inputTime = document.getElementById('inputTime').value;
-      const inputName = document.getElementById('inputName').value.trim();
 
-      if (!inputName) {
-        alert("Please enter your name! 😊");
-        return;
-      }
       if (!inputDate || !inputTime) {
         alert("Please pick a beautiful date and time for us! 🧺❤️");
         return;
       }
-      this.lockInDate(inputDate, inputTime, inputName);
+      this.lockInDate(inputDate, inputTime);
     });
   },
 
@@ -631,7 +626,7 @@ const Game = {
   },
 
   // Parse Date picker & format text
-  lockInDate(dateString, timeString, name) {
+  lockInDate(dateString, timeString) {
     // Format: Wednesday, July 22 at 19:03
     const dateObj = new Date(dateString + 'T' + timeString);
     
@@ -649,16 +644,6 @@ const Game = {
     
     document.getElementById('lockedDateTimeText').textContent = formattedString;
     
-    // Configure sharing links
-    const textMsg = `Hey! I played your picnic date game and locked in our date for ${formattedString}! 🧺❤️ - ${name}`;
-    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(textMsg)}`;
-    document.getElementById('btnShareWhatsApp').href = whatsappUrl;
-
-    const emailSubject = `Picnic Date Quest Locked In!`;
-    const emailBody = `Hey!\n\nI completed your game quest and locked in our picnic date for ${formattedString}!\n\nCan't wait!\n- ${name}`;
-    const emailUrl = `mailto:?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
-    document.getElementById('btnShareEmail').href = emailUrl;
-
     // Victory transition
     this.switchScreen('screenSuccess');
     Sound.play('victory');
