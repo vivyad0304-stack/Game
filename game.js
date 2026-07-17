@@ -132,8 +132,8 @@ const Sound = {
       if (!this.musicPlaying || !this.enabled) return;
       
       const freq = melody[noteIdx];
-      // Triangle wave at very low volume (0.012)
-      this.playMelodyNote(freq, 0.012, 0.25);
+      // Triangle wave at slightly louder but gentle volume (0.035)
+      this.playMelodyNote(freq, 0.035, 0.25);
       
       noteIdx = (noteIdx + 1) % melody.length;
     };
@@ -253,10 +253,13 @@ const Game = {
       }
     });
 
-    // Make all buttons play hover and click sounds
+    // Make all buttons play hover and click sounds, and blur them to prevent Enter key focus double-triggering
     document.querySelectorAll('.pixel-btn, .dialogue-next-btn, .sound-toggle, .dpad-btn').forEach(btn => {
       btn.addEventListener('mouseenter', () => Sound.play('hover'));
-      btn.addEventListener('click', () => Sound.play('click'));
+      btn.addEventListener('click', (e) => {
+        Sound.play('click');
+        e.currentTarget.blur();
+      });
     });
   },
 
@@ -301,6 +304,16 @@ const Game = {
   setupEventListeners() {
     // Key Controls
     window.addEventListener('keydown', (e) => {
+      // If dialogue overlay is active, let Enter/Space advance the dialogue instead of triggering default/restart behavior
+      const dialogueOverlay = document.getElementById('dialogueOverlay');
+      if (this.activeScreen === 'screenGameplay' && this.controlsLocked && dialogueOverlay.style.display !== 'none') {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          this.advanceDialogue();
+          return;
+        }
+      }
+
       if (this.activeScreen !== 'screenGameplay' || this.controlsLocked) return;
       
       let moved = false;
