@@ -618,9 +618,9 @@ const Game = {
       this.switchScreen('screenProposal');
       // Reset No button style positioning to standard centered
       const btnNoWrapper = document.getElementById('btnNoWrapper');
-      btnNoWrapper.style.left = 'unset';
-      btnNoWrapper.style.top = 'unset';
-      btnNoWrapper.style.bottom = 'unset';
+      btnNoWrapper.style.left = '';
+      btnNoWrapper.style.top = '';
+      btnNoWrapper.style.bottom = '';
       document.getElementById('funnyWarning').classList.remove('show');
     }
   },
