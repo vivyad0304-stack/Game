@@ -104,6 +104,72 @@ const Sound = {
     } catch (e) {
       console.warn("Sweep synthesis failed:", e);
     }
+  },
+
+  bgMusicInterval: null,
+  musicPlaying: false,
+
+  startMusic() {
+    if (this.bgMusicInterval || !this.enabled) return;
+    this.init();
+    if (this.ctx.state === 'suspended') {
+      this.ctx.resume();
+    }
+    
+    this.musicPlaying = true;
+    
+    // Cute, simple pentatonic loop (G Major / E Minor pentatonic)
+    // Notes: G4, A4, B4, D5, E5
+    const melody = [
+      392.00, 440.00, 493.88, 587.33, 
+      493.88, 440.00, 392.00, 440.00,
+      493.88, 493.88, 493.88, 587.33,
+      587.33, 493.88, 440.00, 392.00
+    ];
+    let noteIdx = 0;
+    
+    const playNextNote = () => {
+      if (!this.musicPlaying || !this.enabled) return;
+      
+      const freq = melody[noteIdx];
+      // Triangle wave at very low volume (0.012)
+      this.playMelodyNote(freq, 0.012, 0.25);
+      
+      noteIdx = (noteIdx + 1) % melody.length;
+    };
+    
+    playNextNote();
+    this.bgMusicInterval = setInterval(playNextNote, 400);
+  },
+
+  stopMusic() {
+    this.musicPlaying = false;
+    if (this.bgMusicInterval) {
+      clearInterval(this.bgMusicInterval);
+      this.bgMusicInterval = null;
+    }
+  },
+
+  playMelodyNote(frequency, volume, duration) {
+    try {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(frequency, this.ctx.currentTime);
+      
+      gain.gain.setValueAtTime(volume, this.ctx.currentTime);
+      // Gentle decay
+      gain.gain.exponentialRampToValueAtTime(0.00001, this.ctx.currentTime + duration);
+      
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      
+      osc.start();
+      osc.stop(this.ctx.currentTime + duration);
+    } catch (e) {
+      console.warn("Melody note failed:", e);
+    }
   }
 };
 
@@ -151,6 +217,19 @@ const Game = {
     this.setupEventListeners();
     this.resetGame();
     this.initSoundControl();
+
+    // Start background music on first user interaction (browser policy compliant)
+    const startMusicOnInteraction = () => {
+      if (this.activeScreen === 'screenGameplay' || this.activeScreen === 'screenIntro') {
+        Sound.startMusic();
+      }
+      document.removeEventListener('click', startMusicOnInteraction);
+      document.removeEventListener('keydown', startMusicOnInteraction);
+      document.removeEventListener('touchstart', startMusicOnInteraction);
+    };
+    document.addEventListener('click', startMusicOnInteraction);
+    document.addEventListener('keydown', startMusicOnInteraction);
+    document.addEventListener('touchstart', startMusicOnInteraction);
   },
 
   initSoundControl() {
@@ -164,9 +243,13 @@ const Game = {
         soundOnIcon.style.display = 'block';
         soundOffIcon.style.display = 'none';
         Sound.play('click');
+        if (this.activeScreen === 'screenGameplay' || this.activeScreen === 'screenIntro') {
+          Sound.startMusic();
+        }
       } else {
         soundOnIcon.style.display = 'none';
         soundOffIcon.style.display = 'block';
+        Sound.stopMusic();
       }
     });
 
@@ -278,30 +361,51 @@ const Game = {
     // Proposal Screen Dodging No Button
     const btnNo = document.getElementById('btnNo');
     const btnNoWrapper = document.getElementById('btnNoWrapper');
-    const container = document.getElementById('proposalBtnContainer');
+    const screenProposal = document.getElementById('screenProposal');
 
     const dodgeButton = () => {
       Sound.play('dodge');
       
-      // Calculate random coordinate within the proposal screen container boundaries
-      // Container width/height are typically constrained by console screen (aspect ratio 4:3)
-      const containerRect = container.getBoundingClientRect();
+      const screenRect = screenProposal.getBoundingClientRect();
       const btnRect = btnNoWrapper.getBoundingClientRect();
+      const btnYesRect = document.getElementById('btnYes').getBoundingClientRect();
       
-      const maxX = containerRect.width - btnRect.width;
-      const maxY = containerRect.height - btnRect.height;
+      const maxX = screenRect.width - btnRect.width;
+      const maxY = screenRect.height - btnRect.height;
       
-      // Generate new positions (leave some margins)
-      let randomX = Math.random() * maxX;
-      let randomY = Math.random() * maxY - (containerRect.height / 2); // vertical offsets allowed
+      // Convert YES button bounding rect to screen-relative coordinates
+      const yesLeft = btnYesRect.left - screenRect.left;
+      const yesTop = btnYesRect.top - screenRect.top;
+      const yesRight = yesLeft + btnYesRect.width;
+      const yesBottom = yesTop + btnYesRect.height;
       
-      // Prevent overlapping exactly with Yes button (which is centered at X ~ center)
-      if (Math.abs(randomX - (containerRect.width / 2)) < 60) {
-        randomX = randomX < (containerRect.width / 2) ? randomX - 60 : randomX + 60;
+      let randomX = 0;
+      let randomY = 0;
+      let overlap = true;
+      let attempts = 0;
+      const margin = 24; // Safe margin around the Yes button
+      
+      while (overlap && attempts < 20) {
+        randomX = Math.random() * maxX;
+        randomY = Math.random() * maxY;
+        attempts++;
+        
+        const noLeft = randomX;
+        const noTop = randomY;
+        const noRight = noLeft + btnRect.width;
+        const noBottom = noTop + btnRect.height;
+        
+        const horizontalOverlap = noLeft < yesRight + margin && noRight > yesLeft - margin;
+        const verticalOverlap = noTop < yesBottom + margin && noBottom > yesTop - margin;
+        
+        if (!(horizontalOverlap && verticalOverlap)) {
+          overlap = false;
+        }
       }
       
-      btnNoWrapper.style.left = `${Math.max(0, Math.min(maxX, randomX))}px`;
-      btnNoWrapper.style.top = `${Math.max(-100, Math.min(60, randomY))}px`;
+      btnNoWrapper.style.left = `${randomX}px`;
+      btnNoWrapper.style.top = `${randomY}px`;
+      btnNoWrapper.style.bottom = 'auto'; // Clear CSS bottom
 
       // Cycle warning message
       const warning = document.getElementById('funnyWarning');
@@ -335,12 +439,17 @@ const Game = {
     document.getElementById('btnLockIn').addEventListener('click', () => {
       const inputDate = document.getElementById('inputDate').value;
       const inputTime = document.getElementById('inputTime').value;
+      const inputName = document.getElementById('inputName').value.trim();
 
+      if (!inputName) {
+        alert("Please enter your name! 😊");
+        return;
+      }
       if (!inputDate || !inputTime) {
         alert("Please pick a beautiful date and time for us! 🧺❤️");
         return;
       }
-      this.lockInDate(inputDate, inputTime);
+      this.lockInDate(inputDate, inputTime, inputName);
     });
   },
 
@@ -392,6 +501,9 @@ const Game = {
     if (screenId === 'screenGameplay') {
       this.resetGame();
       Sound.play('click');
+      Sound.startMusic();
+    } else if (screenId === 'screenSuccess') {
+      Sound.stopMusic();
     }
   },
 
@@ -513,12 +625,13 @@ const Game = {
       const btnNoWrapper = document.getElementById('btnNoWrapper');
       btnNoWrapper.style.left = 'unset';
       btnNoWrapper.style.top = 'unset';
+      btnNoWrapper.style.bottom = 'unset';
       document.getElementById('funnyWarning').classList.remove('show');
     }
   },
 
   // Parse Date picker & format text
-  lockInDate(dateString, timeString) {
+  lockInDate(dateString, timeString, name) {
     // Format: Wednesday, July 22 at 19:03
     const dateObj = new Date(dateString + 'T' + timeString);
     
@@ -536,6 +649,16 @@ const Game = {
     
     document.getElementById('lockedDateTimeText').textContent = formattedString;
     
+    // Configure sharing links
+    const textMsg = `Hey! I played your picnic date game and locked in our date for ${formattedString}! 🧺❤️ - ${name}`;
+    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(textMsg)}`;
+    document.getElementById('btnShareWhatsApp').href = whatsappUrl;
+
+    const emailSubject = `Picnic Date Quest Locked In!`;
+    const emailBody = `Hey!\n\nI completed your game quest and locked in our picnic date for ${formattedString}!\n\nCan't wait!\n- ${name}`;
+    const emailUrl = `mailto:?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+    document.getElementById('btnShareEmail').href = emailUrl;
+
     // Victory transition
     this.switchScreen('screenSuccess');
     Sound.play('victory');

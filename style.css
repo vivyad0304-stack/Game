@@ -447,29 +447,19 @@ h2 {
   opacity: 1;
 }
 
-.proposal-buttons-container {
-  display: flex;
-  gap: 32px;
-  position: relative;
-  min-height: 60px;
-  width: 100%;
-  justify-content: center;
-  align-items: center;
-}
-
 #btnYes {
   position: absolute;
   left: calc(50% - 90px);
-  top: 50%;
-  transform: translate(-50%, -50%);
+  bottom: 40px;
+  transform: translateX(-50%);
   z-index: 20;
 }
 
 .no-btn-wrapper {
   position: absolute;
   left: calc(50% + 90px);
-  top: 50%;
-  transform: translate(-50%, -50%);
+  bottom: 40px;
+  transform: translateX(-50%);
   transition: all 0.15s cubic-bezier(0.18, 0.89, 0.32, 1.2);
   z-index: 10;
 }
@@ -820,21 +810,19 @@ h2 {
   /* Proposal Screen side-by-side gap sizing */
   #btnYes {
     left: calc(50% - 62px);
+    bottom: 24px;
     font-size: 10px;
     padding: 12px 24px;
   }
 
   .no-btn-wrapper {
     left: calc(50% + 62px);
+    bottom: 24px;
   }
 
   #btnNo {
     font-size: 10px;
     padding: 12px 24px;
-  }
-
-  .proposal-buttons-container {
-    min-height: 50px;
   }
 
   .funny-warning {
