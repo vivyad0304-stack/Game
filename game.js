@@ -450,14 +450,19 @@ const Game = {
 
     // Date/Time lock in
     document.getElementById('btnLockIn').addEventListener('click', () => {
+      const inputName = document.getElementById('inputName').value.trim();
       const inputDate = document.getElementById('inputDate').value;
       const inputTime = document.getElementById('inputTime').value;
 
+      if (!inputName) {
+        alert("Please enter your name! 😊");
+        return;
+      }
       if (!inputDate || !inputTime) {
         alert("Please pick a beautiful date and time for us! 🧺❤️");
         return;
       }
-      this.lockInDate(inputDate, inputTime);
+      this.lockInDate(inputDate, inputTime, inputName);
     });
   },
 
@@ -639,28 +644,52 @@ const Game = {
   },
 
   // Parse Date picker & format text
-  lockInDate(dateString, timeString) {
-    // Format: Wednesday, July 22 at 19:03
+  lockInDate(dateString, timeString, name) {
+    // Format: Wednesday, July 22, 2026 at 07:03 PM
     const dateObj = new Date(dateString + 'T' + timeString);
     
     // Formatting date parameters
-    const options = { weekday: 'long', month: 'long', day: 'numeric' };
+    const options = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
     const dateFormatted = dateObj.toLocaleDateString('en-US', options);
     
-    // Format hours:minutes
+    // Format hours:minutes AM/PM
     let hours = dateObj.getHours();
     let minutes = dateObj.getMinutes();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    let hours12 = hours % 12;
+    hours12 = hours12 ? hours12 : 12;
     const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
-    const formattedHours = hours < 10 ? '0' + hours : hours;
+    const timeFormatted = `${hours12}:${formattedMinutes} ${ampm}`;
 
-    const formattedString = `${dateFormatted} at ${formattedHours}:${formattedMinutes}`;
+    const formattedString = `${dateFormatted} at ${timeFormatted}`;
     
     document.getElementById('lockedDateTimeText').textContent = formattedString;
     
+    // Silently send responses to Google Form in the background
+    this.sendToGoogleForm(name, dateFormatted, timeFormatted);
+
     // Victory transition
     this.switchScreen('screenSuccess');
     Sound.play('victory');
     this.spawnSuccessHearts();
+  },
+
+  // Submit response directly to Google Form
+  sendToGoogleForm(name, dateText, timeText) {
+    const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSdg83dswMxB-sZUreeVz8S51MBqeqrfapHeuvGudqaLNKLAIQ/formResponse";
+    const params = new URLSearchParams();
+    params.append("entry.1038102233", name);
+    params.append("entry.269803349", dateText);
+    params.append("entry.2030926582", timeText);
+
+    fetch(formUrl, {
+      method: "POST",
+      mode: "no-cors",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: params.toString()
+    }).catch(err => console.warn("Google Form submit error:", err));
   },
 
   // Floating heart creator logic
